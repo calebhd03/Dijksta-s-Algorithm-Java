@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,7 +21,7 @@ public class DijkstraAlgorithm {
         boolean visited = false;
         Node parentNode = null;
         
-        ArrayList<NodeLink> nodeLinks = new ArrayList<NodeLink>();
+        ArrayList<NodeLink> nodeLinks = new ArrayList<>();
 
         public void AddLink(Node newNode, int weightOfEdge)
         {
@@ -54,12 +56,15 @@ public class DijkstraAlgorithm {
     int sourceVertex = 0;
     int numberOfEdges = 0;
     
-    ArrayList<Node> nodes = new ArrayList<Node>();
+    ArrayList<Node> nodes = new ArrayList<>();
     
+    //creates a graph based off the input file
     public void CreateGraph() throws FileNotFoundException
     {
-        File file = new File("src/cop3503-asn2-input.txt");
-        System.out.println(file.getName());
+        System.out.println("-------\ngenerating graph");
+        File file = new File("Dijkstra's Algoritm/src/cop3503-asn2-input.txt");
+        System.out.println("Input file = " + file.getName());
+        System.out.println("Path = " + file.getPath());
         Scanner inScanner = new Scanner(file);
         
         this.vertices = inScanner.nextInt();
@@ -87,7 +92,7 @@ public class DijkstraAlgorithm {
 
     public void GenerateSpanningTree()
     {
-        System.out.println("-------\n generating spanning tree " + this.vertices);
+        System.out.println("-------\ngenerating spanning tree");
         int visistedVertices = 0;
         Node sourceNode = nodes.get(sourceVertex-1);
         sourceNode.distance = 0;
@@ -97,7 +102,6 @@ public class DijkstraAlgorithm {
         //while unvisited vertices
         while(visistedVertices < this.vertices)
         {
-            System.out.print("!!!!!!!!!!!!!!!!!!\ncurrent node = ");currentNode.PrintNode();
             //loop through each neighbor
             for(int i=0; i<currentNode.nodeLinks.size(); i++)
             {
@@ -105,27 +109,18 @@ public class DijkstraAlgorithm {
                 if(!targetNode.visited)
                 {
                     int weight = currentNode.nodeLinks.get(i).weight;
-                    System.out.print("checking link to ");targetNode.PrintNode();
                     //check if a new shorted path has been found
-                    if(targetNode.distance == Integer.MAX_VALUE)
-                    {
-                        targetNode.distance = currentNode.distance  + weight;
-                        targetNode.parentNode = currentNode;
-                    }
-                    else if(targetNode.distance > currentNode.distance  + weight)
+                    if(targetNode.distance > currentNode.distance  + weight || targetNode.distance == Integer.MAX_VALUE)
                     {
                         targetNode.distance = currentNode.distance + weight;
                         targetNode.parentNode = currentNode;
                     }
-
-                    System.out.print("target node after change "); targetNode.PrintNode();
                 }
             }
             
             //set current node as visisted
             if(!currentNode.visited)
             {
-
                 currentNode.visited = true;
                 visistedVertices += 1;
             }
@@ -148,34 +143,37 @@ public class DijkstraAlgorithm {
             {
                 currentNode = nextNode;
             }
-
-
         }
     }
 
-    public void OutPutSpanningTree()
+    public void OutPutSpanningTree() throws IOException
     {
+        File outFile = new File("Dijkstra's Algoritm/src/cop3503-asn2-output-deters-caleb.txt");
+        FileWriter outputFile = new FileWriter(outFile);
+        System.out.println("Output file = " + outFile.getName());
+        System.out.println("Path = " + outFile.getPath());
         for (Node node : nodes) {
-            System.out.print(node.value + " ");
+            outputFile.write(node.value + " ");
             if(node.distance == 0)
             {
-                System.out.print("-1");
+                outputFile.write("-1 ");
             }
             else
             {
-                System.out.print(node.distance);
+                outputFile.write(node.distance + " ");
             }
 
-            System.out.print(" ");
             if(node.parentNode == null)
             {
-                System.out.println("-1");
+                outputFile.write("-1\n");
             }
             else
             {
-                System.out.println(node.parentNode.value);
+                outputFile.write(node.parentNode.value + "\n");
             }
         }
+
+        outputFile.close();
     }
 
     public void PrintTree()
@@ -184,5 +182,4 @@ public class DijkstraAlgorithm {
             node.PrintNode();
         }
     }
-
 }
