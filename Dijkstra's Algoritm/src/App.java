@@ -1,5 +1,9 @@
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
+        DijkstraAlgorithm dA = new DijkstraAlgorithm();
+        dA.CreateGraph();
+        dA.PrintTree();
+        dA.GenerateSpanningTree();
+        dA.OutPutSpanningTree();
     }
 }
